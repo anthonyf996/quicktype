@@ -29,13 +29,25 @@ window.onload = () => {
 
 	document.addEventListener('keydown', (e) => {
 		const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
-		if (characterSpan.getAttribute('data-character') !== e.key) {
-			characterSpan.classList.remove('typed-ready');
-			characterSpan.classList.add('typed-incorrect');
-		} else {
-			characterSpan.classList.remove('typed-ready');
-			characterSpan.classList.add('typed-correct');
+		if (e.key == 'Backspace') {
+			if (currCharPos >= 0) {
+				const prevCharacterSpan = document.querySelector(`[data-character-pos="${currCharPos - 1}"]`);
+				prevCharacterSpan.classList.remove('typed-correct');
+				prevCharacterSpan.classList.remove('typed-incorrect');
+				prevCharacterSpan.classList.add('typed-ready');
+				if (currCharPos > 0) {
+					currCharPos -= 1;
+				}
+			}
+		} else if (e.key !== 'Shift' ) {
+			if (characterSpan.getAttribute('data-character') !== e.key) {
+				characterSpan.classList.remove('typed-ready');
+				characterSpan.classList.add('typed-incorrect');
+			} else {
+				characterSpan.classList.remove('typed-ready');
+				characterSpan.classList.add('typed-correct');
+			}
+			currCharPos += 1;
 		}
-		currCharPos += 1;
 	});
 };
