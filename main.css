@@ -32,3 +32,7 @@ p#typing-text-area {
 	text-align: right;
 	color: #555;
 }
+
+#wpm-value {
+	margin-right: 2rem;
+}

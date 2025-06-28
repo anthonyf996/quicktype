@@ -1,5 +1,10 @@
 'use strict';
 
+let wordsList;
+let wordsEntered = [];
+let currWordIndex = 0;
+let currWord = '';
+let wordCount = 0;
 let currCharPos = 0;
 let timerValueInSeconds = 0;
 
@@ -25,6 +30,7 @@ function initializeTypingTextArea() {
 
 	const randomIndex = Math.floor(Math.random() * words.length);
 	const wordsSelection = words[randomIndex];
+	wordsList = wordsSelection.split(' ');
 	let charPos = 0;
 	// Attach state to each character of the selected words string from the "words" array.
 	// Then, add and display each character to the typing text area on the webpage.
@@ -42,17 +48,30 @@ function initializeTypingTextArea() {
 window.onload = () => {
 	initializeTypingTextArea();
 
+	const infoBar = document.getElementById('timer');
 	setInterval(() => {
-		const infoBar = document.getElementById('timer');
 		timerValueInSeconds += 1;
 		infoBar.innerHTML = secondsToTimeString(timerValueInSeconds);
 	}, 1000);
 
+	const wpmValue = document.getElementById('wpm-value');
+	setInterval(() => {
+		if (timerValueInSeconds > 0) {
+			wpmValue.innerHTML = Math.floor(wordCount / timerValueInSeconds * 60);
+		}
+	}, 300);
+
 	document.addEventListener('keydown', (e) => {
+		e.preventDefault();
 		const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
 		// Avoid moving the page down when the spacebar key is pressed.
 		if (e.key == ' ') {
-			e.preventDefault();
+			if (currWord === wordsList[currWordIndex]) {
+				wordCount += 1;
+			}
+			wordsEntered.push(currWord);
+			currWordIndex += 1;
+			currWord = '';
 		}
 
 		// Pressing the backspace key will undo state changes one character at a time.
@@ -64,6 +83,13 @@ window.onload = () => {
 				prevCharacterSpan.classList.add('typed-ready');
 				if (currCharPos > 0) {
 					currCharPos -= 1;
+					if (currWord == '') {
+						wordCount -= 1;
+						currWord = wordsEntered.pop();
+						currWordIndex -= 1;
+					} else {
+						currWord = currWord.slice(0,currWord.length - 1);
+					}
 				}
 			}
 		} else if (e.key !== 'Shift' ) {
@@ -75,6 +101,9 @@ window.onload = () => {
 			} else {
 				characterSpan.classList.remove('typed-ready');
 				characterSpan.classList.add('typed-correct');
+			}
+			if (e.key !== ' ') {
+				currWord += e.key;
 			}
 			currCharPos += 1;
 		}
