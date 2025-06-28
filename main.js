@@ -109,7 +109,7 @@ window.onload = () => {
 			accuracy = (100 * (validWordCount / validWordsListCurrWordIndex)).toFixed(2);
 			accuracyValue.innerHTML = `${accuracy} %`;
 		} else {
-			accuracyValue.innerHTML = '0 %';
+			accuracyValue.innerHTML = '0.00 %';
 		}
 	}, 300);
 
