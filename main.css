@@ -33,6 +33,10 @@ p#typing-text-area {
 	color: #555;
 }
 
+#accuracy-value {
+	margin-right: 2rem;
+}
+
 #wpm-value {
 	margin-right: 2rem;
 }

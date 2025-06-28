@@ -11,6 +11,7 @@ let validWordCount = 0;
 let currCharPos = 0;
 let timerValueInSeconds = 0;
 let wpm = 0;
+let accuracy = 0;
 const invalidKeys = {'Control': true, 'Shift': true, 'CapsLock': true, 'Tab': true, 'Escape': true, 'Alt': true, 'Enter': true, 'Meta': true, 'ContextMenu': true, 
 			'ArrowUp': true, 'ArrowDown': true, 'ArrowLeft': true, 'ArrowRight': true, 'Delete': true, 'End': true, 'PageUp': true, 'PageDown': true, 
 			'Insert': true, 'Home': true, 'Pause': true, 'ScrollLock': true, 'F1': true, 'F2': true, 'F3': true, 'F4': true, 'F5': true, 'F6': true,
@@ -73,6 +74,14 @@ window.onload = () => {
 		if (timerValueInSeconds > 0) {
 			wpm = Math.floor(validWordCount / timerValueInSeconds * 60);
 			wpmValue.innerHTML = wpm;
+		}
+	}, 300);
+
+	const accuracyValue = document.getElementById('accuracy-value');
+	const accuracyValueUpdateIntervalId = setInterval(() => {
+		if (validWordsListCurrWordIndex > 0) {
+			accuracy = (100 * (validWordCount / validWordsListCurrWordIndex)).toFixed(2);
+			accuracyValue.innerHTML = `${accuracy} %`;
 		}
 	}, 300);
 
@@ -149,6 +158,8 @@ window.onload = () => {
 				// We have reached the end of the typing text area.
 				// Stop the wpm counter.
 				clearInterval(wpmValueUpdateIntervalId);
+				// Stop the accuracy counter.
+				clearInterval(accuracyValueUpdateIntervalId);
 				// Stop the timer.
 				clearInterval(timerValueUpdateIntervalId);
 			}
