@@ -1,3 +1,27 @@
 html {
 	font-size: 16px;
 }
+
+p#typing-text-area {
+	font-size: 1.5rem;
+	border: 1px solid #ddd;
+	border-radius: 0.5rem;
+	margin: 0 auto;
+	padding: 1rem;
+	width: 60rem;
+}
+
+.typed-ready {
+	color: #aaa;
+	background-color: white;
+}
+
+.typed-correct {
+	color: #060;
+	background-color: #9f95;
+}
+
+.typed-incorrect {
+	color: #e60000;
+	background-color: #ffb3b355;
+}
