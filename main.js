@@ -32,6 +32,9 @@ window.onload = () => {
 		if (characterSpan.getAttribute('data-character') !== e.key) {
 			characterSpan.classList.remove('typed-ready');
 			characterSpan.classList.add('typed-incorrect');
+		} else {
+			characterSpan.classList.remove('typed-ready');
+			characterSpan.classList.add('typed-correct');
 		}
 		currCharPos += 1;
 	});
