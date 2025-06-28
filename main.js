@@ -30,19 +30,21 @@ function initializeTypingTextArea() {
 
 	const randomIndex = Math.floor(Math.random() * words.length);
 	const wordsSelection = words[randomIndex];
-	wordsList = wordsSelection.split(' ');
-	let charPos = 0;
-	// Attach state to each character of the selected words string from the "words" array.
-	// Then, add and display each character to the typing text area on the webpage.
-	wordsSelection.split('').forEach((character) => {
-		const newCharacterSpan = document.createElement('span');
-		newCharacterSpan.classList.add('typed-ready');
-		newCharacterSpan.setAttribute('data-character', character);
-		newCharacterSpan.setAttribute('data-character-pos', charPos);
-		newCharacterSpan.innerHTML = character;
-		typingTextArea.appendChild(newCharacterSpan);
-		charPos += 1;
-	});
+	if (wordsSelection) {
+		wordsList = wordsSelection.split(' ');
+		let charPos = 0;
+		// Attach state to each character of the selected words string from the "words" array.
+		// Then, add and display each character to the typing text area on the webpage.
+		wordsSelection.split('').forEach((character) => {
+			const newCharacterSpan = document.createElement('span');
+			newCharacterSpan.classList.add('typed-ready');
+			newCharacterSpan.setAttribute('data-character', character);
+			newCharacterSpan.setAttribute('data-character-pos', charPos);
+			newCharacterSpan.innerHTML = character;
+			typingTextArea.appendChild(newCharacterSpan);
+			charPos += 1;
+		});
+	}
 }
 
 window.onload = () => {
