@@ -32,7 +32,7 @@ p#typing-text-area {
 
 #info-bar {
 	width: 60rem;
-	margin: 0 auto;
+	margin: 0.5rem auto;
 	text-align: right;
 	color: #555;
 }
