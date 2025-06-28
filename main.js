@@ -28,6 +28,11 @@ window.onload = () => {
 	initializeTypingTextArea();
 
 	document.addEventListener('keydown', (e) => {
-		console.log(e.key);
+		const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
+		if (characterSpan.getAttribute('data-character') !== e.key) {
+			characterSpan.classList.remove('typed-ready');
+			characterSpan.classList.add('typed-incorrect');
+		}
+		currCharPos += 1;
 	});
 };
