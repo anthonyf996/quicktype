@@ -1,12 +1,20 @@
 'use strict';
 
-let wordsList;
-let wordsEntered = [];
-let currWordIndex = 0;
-let currWord = '';
-let wordCount = 0;
+let validWordsList;
+let validWordsListCurrWordIndex = 0;
+let validWordsListCurrWordCharIndex = 0;
+let wordsEnteredBuffer = [];
+let currWordBuffer = '';
+let currWordRemovedBuffer = '';
+let typedTextBuffer = '';
+let validWordCount = 0;
 let currCharPos = 0;
 let timerValueInSeconds = 0;
+let wpm = 0;
+const invalidKeys = {'Control': true, 'Shift': true, 'CapsLock': true, 'Tab': true, 'Escape': true, 'Alt': true, 'Enter': true, 'Meta': true, 'ContextMenu': true, 
+			'ArrowUp': true, 'ArrowDown': true, 'ArrowLeft': true, 'ArrowRight': true, 'Delete': true, 'End': true, 'PageUp': true, 'PageDown': true, 
+			'Insert': true, 'Home': true, 'Pause': true, 'ScrollLock': true, 'F1': true, 'F2': true, 'F3': true, 'F4': true, 'F5': true, 'F6': true,
+			'F7': true, 'F8': true, 'F9': true, 'F10': true, 'F11': true, 'F12': true};
 
 function secondsToTimeString(seconds) {
 	let minutesStr = '';
@@ -20,6 +28,10 @@ function secondsToTimeString(seconds) {
 	return `${minutesStr}:${secondsStr}`;
 }
 
+function isValidKey(key) {
+	return invalidKeys[key] === undefined ? true : false;
+}
+
 function initializeTypingTextArea() {
 	const typingTextArea = document.getElementById('typing-text-area');
 
@@ -31,7 +43,7 @@ function initializeTypingTextArea() {
 	const randomIndex = Math.floor(Math.random() * words.length);
 	const wordsSelection = words[randomIndex];
 	if (wordsSelection) {
-		wordsList = wordsSelection.split(' ');
+		validWordsList = wordsSelection.split(' ');
 		let charPos = 0;
 		// Attach state to each character of the selected words string from the "words" array.
 		// Then, add and display each character to the typing text area on the webpage.
@@ -51,63 +63,95 @@ window.onload = () => {
 	initializeTypingTextArea();
 
 	const infoBar = document.getElementById('timer');
-	setInterval(() => {
+	const timerValueUpdateIntervalId = setInterval(() => {
 		timerValueInSeconds += 1;
 		infoBar.innerHTML = secondsToTimeString(timerValueInSeconds);
 	}, 1000);
 
 	const wpmValue = document.getElementById('wpm-value');
-	setInterval(() => {
+	const wpmValueUpdateIntervalId = setInterval(() => {
 		if (timerValueInSeconds > 0) {
-			wpmValue.innerHTML = Math.floor(wordCount / timerValueInSeconds * 60);
+			wpm = Math.floor(validWordCount / timerValueInSeconds * 60);
+			wpmValue.innerHTML = wpm;
 		}
 	}, 300);
 
 	document.addEventListener('keydown', (e) => {
 		e.preventDefault();
-		const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
-		// Avoid moving the page down when the spacebar key is pressed.
-		if (e.key == ' ') {
-			if (currWord === wordsList[currWordIndex]) {
-				wordCount += 1;
-			}
-			wordsEntered.push(currWord);
-			currWordIndex += 1;
-			currWord = '';
-		}
-
-		// Pressing the backspace key will undo state changes one character at a time.
-		if (e.key == 'Backspace') {
-			if (currCharPos > 0) {
-				const prevCharacterSpan = document.querySelector(`[data-character-pos="${currCharPos - 1}"]`);
-				prevCharacterSpan.classList.remove('typed-correct');
-				prevCharacterSpan.classList.remove('typed-incorrect');
-				prevCharacterSpan.classList.add('typed-ready');
-				if (currCharPos > 0) {
-					currCharPos -= 1;
-					if (currWord == '') {
-						wordCount -= 1;
-						currWord = wordsEntered.pop();
-						currWordIndex -= 1;
-					} else {
-						currWord = currWord.slice(0,currWord.length - 1);
+		const key = e.key;
+		// Ignore keys designated as invalid.
+		if (isValidKey(key)) {
+			const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
+			// Continue only if we have not reached the end of the typing text area.
+			if (characterSpan) {
+				if (key == ' ') {
+					if (validWordsList[validWordsListCurrWordIndex ] === currWordBuffer) {
+						validWordCount += 1;
 					}
+					wordsEnteredBuffer.push(currWordBuffer);
+					currWordBuffer = '';
 				}
+
+				if (key == 'Backspace') {
+					if (currCharPos > 0) {
+						if (typedTextBuffer[typedTextBuffer.length - 1] === ' ') {
+							currWordBuffer = wordsEnteredBuffer.pop();
+							if (validWordsList[validWordsListCurrWordIndex - 1] === currWordBuffer) {
+								validWordCount -= 1;
+							}
+							currWordRemovedBuffer = '';
+						} else {
+							currWordRemovedBuffer = currWordBuffer[currWordBuffer.length - 1] + currWordRemovedBuffer;
+							currWordBuffer = currWordBuffer.slice(0,currWordBuffer.length - 1);
+						}
+
+						typedTextBuffer = typedTextBuffer.slice(0,typedTextBuffer.length - 1);
+
+						if (validWordsListCurrWordCharIndex === 0) {
+							validWordsListCurrWordIndex -= 1;
+					        	validWordsListCurrWordCharIndex = validWordsList[validWordsListCurrWordIndex].length;
+						} else {
+							validWordsListCurrWordCharIndex -= 1;
+						}
+
+						const prevCharacterSpan = document.querySelector(`[data-character-pos="${currCharPos - 1}"]`);
+						prevCharacterSpan.classList.remove('typed-correct');
+						prevCharacterSpan.classList.remove('typed-incorrect');
+						prevCharacterSpan.classList.add('typed-ready');
+						currCharPos -= 1;
+					}
+				} else {
+					if (key !== ' ') {
+						currWordBuffer += key;
+					}
+
+					if (validWordsList[validWordsListCurrWordIndex].length === validWordsListCurrWordCharIndex) {
+						validWordsListCurrWordIndex += 1;
+						validWordsListCurrWordCharIndex = 0;
+					} else {
+						validWordsListCurrWordCharIndex += 1;
+					}
+
+					typedTextBuffer += key;
+
+					// Update the state to reflect an incorrectly typed character.
+					if (characterSpan.getAttribute('data-character') !== key) {
+						characterSpan.classList.remove('typed-ready');
+						characterSpan.classList.add('typed-incorrect');
+					// Update the state to reflect a correctly typed character.
+					} else {
+						characterSpan.classList.remove('typed-ready');
+						characterSpan.classList.add('typed-correct');
+					}
+					currCharPos += 1;
+				}
+	        	} else {
+				// We have reached the end of the typing text area.
+				// Stop the wpm counter.
+				clearInterval(wpmValueUpdateIntervalId);
+				// Stop the timer.
+				clearInterval(timerValueUpdateIntervalId);
 			}
-		} else if (e.key !== 'Shift' ) {
-			// Update the state to reflect an incorrectly typed character.
-			if (characterSpan.getAttribute('data-character') !== e.key) {
-				characterSpan.classList.remove('typed-ready');
-				characterSpan.classList.add('typed-incorrect');
-			// Update the state to reflect a correctly typed character.
-			} else {
-				characterSpan.classList.remove('typed-ready');
-				characterSpan.classList.add('typed-correct');
-			}
-			if (e.key !== ' ') {
-				currWord += e.key;
-			}
-			currCharPos += 1;
 		}
 	});
 };
