@@ -25,3 +25,10 @@ p#typing-text-area {
 	color: #e60000;
 	background-color: #ffb3b355;
 }
+
+#info-bar {
+	width: 60rem;
+	margin: 0 auto;
+	text-align: right;
+	color: #555;
+}

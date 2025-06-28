@@ -1,6 +1,19 @@
 'use strict';
 
 let currCharPos = 0;
+let timerValueInSeconds = 0;
+
+function secondsToTimeString(seconds) {
+	let minutesStr = '';
+	let secondsStr = '';
+	const minutes = Math.floor(seconds / 60);
+	seconds = seconds % 60;
+
+	(minutes < 10) ? minutesStr = `0${minutes}` : minutesStr = `${minutes}`;
+	(seconds < 10) ? secondsStr = `0${seconds}` : secondsStr = `${seconds}`;
+
+	return `${minutesStr}:${secondsStr}`;
+}
 
 function initializeTypingTextArea() {
 	const typingTextArea = document.getElementById('typing-text-area');
@@ -28,6 +41,12 @@ function initializeTypingTextArea() {
 
 window.onload = () => {
 	initializeTypingTextArea();
+
+	setInterval(() => {
+		const infoBar = document.getElementById('timer');
+		timerValueInSeconds += 1;
+		infoBar.innerHTML = secondsToTimeString(timerValueInSeconds);
+	}, 1000);
 
 	document.addEventListener('keydown', (e) => {
 		const characterSpan = document.querySelector(`[data-character-pos="${currCharPos}"]`);
