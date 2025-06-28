@@ -2,6 +2,10 @@ html {
 	font-size: 16px;
 }
 
+#reset-button {
+	margin-right: 2rem;
+}
+
 p#typing-text-area {
 	font-size: 1.5rem;
 	border: 1px solid #ddd;

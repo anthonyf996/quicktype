@@ -33,6 +33,25 @@ function isValidKey(key) {
 	return invalidKeys[key] === undefined ? true : false;
 }
 
+function resetTypingTextAreaState() {
+	validWordsList = [];
+	validWordsListCurrWordIndex = 0;
+	validWordsListCurrWordCharIndex = 0;
+	wordsEnteredBuffer = [];
+	currWordBuffer = '';
+	currWordRemovedBuffer = '';
+	typedTextBuffer = '';
+	validWordCount = 0;
+	currCharPos = 0;
+	timerValueInSeconds = 0;
+	wpm = 0;
+	accuracy = 0;
+
+	const typingTextArea = document.getElementById('typing-text-area');
+	typingTextArea.innerHTML = '';
+	initializeTypingTextArea();
+}
+
 function initializeTypingTextArea() {
 	const typingTextArea = document.getElementById('typing-text-area');
 
@@ -63,6 +82,11 @@ function initializeTypingTextArea() {
 window.onload = () => {
 	initializeTypingTextArea();
 
+	const resetButton = document.getElementById('reset-button');
+	resetButton.addEventListener('click', () => {
+		resetTypingTextAreaState();
+	});
+
 	const infoBar = document.getElementById('timer');
 	const timerValueUpdateIntervalId = setInterval(() => {
 		timerValueInSeconds += 1;
@@ -74,6 +98,8 @@ window.onload = () => {
 		if (timerValueInSeconds > 0) {
 			wpm = Math.floor(validWordCount / timerValueInSeconds * 60);
 			wpmValue.innerHTML = wpm;
+		} else {
+			wpmValue.innerHTML = 0;
 		}
 	}, 300);
 
@@ -82,6 +108,8 @@ window.onload = () => {
 		if (validWordsListCurrWordIndex > 0) {
 			accuracy = (100 * (validWordCount / validWordsListCurrWordIndex)).toFixed(2);
 			accuracyValue.innerHTML = `${accuracy} %`;
+		} else {
+			accuracyValue.innerHTML = '0 %';
 		}
 	}, 300);
 
